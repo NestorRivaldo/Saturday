@@ -30,7 +30,18 @@ Aplicación web para gestionar un **Cuadro de Mando Integral (BSC)** completo: o
 | Build | Gradle 9.4 (wrapper incluido) |
 | Frontend | CSS propio + sprite SVG inline · Chart.js (CDN) |
 
-## Cómo ejecutarlo
+## Inicio rápido (un clic)
+
+| Sistema | Cómo arrancar |
+| --- | --- |
+| **Windows** | Doble clic en `iniciar.bat` |
+| **Linux / macOS** | `./iniciar.sh` |
+
+El lanzador comprueba que exista Java 21, arranca la aplicación y **abre el navegador automáticamente** cuando el servidor ya responde. Si la aplicación ya estaba en marcha, solo abre la pestaña.
+
+> La ventana de la consola debe permanecer abierta: al cerrarla se detiene el servidor.
+
+## Cómo ejecutarlo manualmente
 
 Requisitos: **JDK 21**. No hace falta instalar Gradle ni una base de datos.
 
