@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('mediciones')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title" th:text="${titulo}">Nueva medición</h1>
+                    <p class="page-subtitle">Registra un valor observado para actualizar el avance del indicador</p>
+                </div>
+                <a th:href="@{/mediciones}" class="btn-secondary">
+                    <svg th:replace="~{fragments/icons :: icon('arrow-left', 'icon-sm')}"></svg>
+                    Volver
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <section class="form-card" style="max-width: 860px;">
+            <form th:action="@{/mediciones/guardar}" th:object="${medicion}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('chart', '')}"></svg>
+                        Datos de la medición
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="med-kpi">Indicador <span class="req">*</span></label>
+                            <select id="med-kpi" th:field="*{kpiId}" required>
+                                <option value="">Seleccione un indicador…</option>
+                                <option th:each="kpi : ${kpis}" th:value="${kpi.id}" th:text="${kpi.id} + ' · ' + ${kpi.nombre}">SW-01 · Margen operativo</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="med-periodo">Periodo <span class="req">*</span></label>
+                            <input id="med-periodo" type="text" th:field="*{periodo}" required placeholder="Ej.: 2026-01">
+                        </div>
+
+                        <div class="field">
+                            <label for="med-fecha">Fecha de medición</label>
+                            <input id="med-fecha" type="date" th:field="*{fecha}">
+                        </div>
+
+                        <div class="field">
+                            <label for="med-valor">Valor observado <span class="req">*</span></label>
+                            <input id="med-valor" type="number" step="any" th:field="*{valor}" required placeholder="Ej.: 12.4">
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="med-responsable">Responsable</label>
+                            <input id="med-responsable" type="text" th:field="*{responsable}" placeholder="Ej.: Ana Pérez">
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="med-notas">Notas</label>
+                            <textarea id="med-notas" th:field="*{notas}" rows="3"
+                                      placeholder="Observaciones, incidencias o contexto del valor registrado…"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/mediciones}" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('check', 'icon-sm')}"></svg>
+                        Guardar medición
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

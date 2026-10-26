@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' · BSC Southwest'">BSC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bsc.css}">
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        })();
+
+        function toggleTheme() {
+            var root = document.documentElement;
+            var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            if (next === 'light') root.removeAttribute('data-theme');
+            else root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var search = document.querySelector('[data-table-search]');
+            if (search) {
+                search.addEventListener('input', function () {
+                    var q = this.value.toLowerCase().trim();
+                    var rows = document.querySelectorAll('.bsc-table tbody tr[data-row]');
+                    var visibles = 0;
+                    rows.forEach(function (tr) {
+                        var match = tr.textContent.toLowerCase().indexOf(q) !== -1;
+                        tr.style.display = match ? '' : 'none';
+                        if (match) visibles++;
+                    });
+                    var vacio = document.getElementById('filtro-vacio');
+                    if (vacio) vacio.style.display = (visibles === 0 && rows.length > 0) ? 'block' : 'none';
+                });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    if (search) search.focus();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+<!-- ============ SIDEBAR IZQUIERDA ============ -->
+<th:block th:fragment="sidebarLeft(activePage)">
+    <svg th:replace="~{fragments/icons :: sprite}"></svg>
+
+    <aside class="sidebar">
+        <a th:href="@{/dashboard}" class="brand">
+            <span class="brand-mark">
+                <svg th:replace="~{fragments/icons :: icon('plane', 'icon-lg')}"></svg>
+            </span>
+            <span class="brand-text">
+                <strong>Southwest BSC</strong>
+                <small>Balanced Scorecard · 2025</small>
+            </span>
+        </a>
+
+        <nav class="nav" aria-label="Navegación principal">
+            <p class="nav-label">Panel</p>
+            <a th:href="@{/dashboard}" class="nav-item" th:classappend="${activePage == 'inicio' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('dashboard', '')}"></svg>
+                <span>Resumen ejecutivo</span>
+            </a>
+
+            <p class="nav-label">Gestión estratégica</p>
+            <a th:href="@{/objetivos}" class="nav-item" th:classappend="${activePage == 'objetivos' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('compass', '')}"></svg>
+                <span>Objetivos</span>
+            </a>
+            <a th:href="@{/kpis}" class="nav-item" th:classappend="${activePage == 'indicadores' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+                <span>Indicadores</span>
+            </a>
+            <a th:href="@{/planes}" class="nav-item" th:classappend="${activePage == 'planes' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('clipboard', '')}"></svg>
+                <span>Planes de acción</span>
+            </a>
+            <a th:href="@{/mediciones}" class="nav-item" th:classappend="${activePage == 'mediciones' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('chart', '')}"></svg>
+                <span>Mediciones</span>
+            </a>
+
+            <p class="nav-label">Seguimiento</p>
+            <a th:href="@{/kpis(soloRiesgo='true')}" class="nav-item nav-item-risk" th:classappend="${activePage == 'riesgos' ? 'active' : ''}">
+                <svg th:replace="~{fragments/icons :: icon('alert', '')}"></svg>
+                <span>KPIs en riesgo</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-foot">
+            <a th:href="@{/api/bsc/metricas}" target="_blank" rel="noopener" class="nav-item nav-item-quiet">
+                <svg th:replace="~{fragments/icons :: icon('link', '')}"></svg>
+                <span>API de métricas</span>
+                <svg th:replace="~{fragments/icons :: icon('external', 'nav-trailing')}"></svg>
+            </a>
+            <button type="button" class="nav-item nav-item-quiet nav-item-button" onclick="toggleTheme()">
+                <svg th:replace="~{fragments/icons :: icon('sun', 'theme-icon-sun')}"></svg>
+                <svg th:replace="~{fragments/icons :: icon('moon', 'theme-icon-moon')}"></svg>
+                <span>Cambiar tema</span>
+            </button>
+            <div class="sidebar-user">
+                <span class="avatar avatar-sm">AD</span>
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Gerencia de estrategia</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+</th:block>
+
+<!-- ============ BARRA SUPERIOR ============ -->
+<header th:fragment="topBar" class="topbar">
+    <div class="breadcrumb">
+        <span class="crumb-root">BSC</span>
+        <svg th:replace="~{fragments/icons :: icon('chevron-right', 'crumb-sep')}"></svg>
+        <span class="crumb-current" th:text="${title != null ? title : (titulo != null ? titulo : 'Resumen ejecutivo')}">Resumen ejecutivo</span>
+    </div>
+
+    <div class="topbar-right">
+        <label class="global-search">
+            <svg th:replace="~{fragments/icons :: icon('search', '')}"></svg>
+            <input type="search" placeholder="Buscar en la tabla…" data-table-search aria-label="Buscar en la tabla">
+            <kbd>/</kbd>
+        </label>
+
+        <button type="button" class="icon-btn" onclick="toggleTheme()" title="Cambiar tema claro / oscuro" aria-label="Cambiar tema">
+            <svg th:replace="~{fragments/icons :: icon('sun', 'theme-icon-sun')}"></svg>
+            <svg th:replace="~{fragments/icons :: icon('moon', 'theme-icon-moon')}"></svg>
+        </button>
+
+        <button type="button" class="icon-btn has-dot" title="Notificaciones" aria-label="Notificaciones">
+            <svg th:replace="~{fragments/icons :: icon('bell', '')}"></svg>
+        </button>
+
+        <div class="user-chip">
+            <span class="avatar">AD</span>
+            <span class="user-meta">
+                <strong>Administrador</strong>
+                <small>Gerencia</small>
+            </span>
+        </div>
+    </div>
+</header>
+
+<!-- ============ SIDEBAR DERECHA ============ -->
+<aside th:fragment="sidebarRight" class="sidebar-right">
+    <div class="side-card">
+        <h3 class="side-card-title">Accesos rápidos</h3>
+        <a th:href="@{/kpis/nuevo}" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+            <span>Registrar indicador</span>
+            <svg th:replace="~{fragments/icons :: icon('chevron-right', 'side-trailing')}"></svg>
+        </a>
+        <a th:href="@{/objetivos/nuevo}" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('compass', '')}"></svg>
+            <span>Registrar objetivo</span>
+            <svg th:replace="~{fragments/icons :: icon('chevron-right', 'side-trailing')}"></svg>
+        </a>
+        <a th:href="@{/planes/nuevo}" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('clipboard', '')}"></svg>
+            <span>Registrar plan</span>
+            <svg th:replace="~{fragments/icons :: icon('chevron-right', 'side-trailing')}"></svg>
+        </a>
+        <a th:href="@{/mediciones/nuevo}" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('chart', '')}"></svg>
+            <span>Registrar medición</span>
+            <svg th:replace="~{fragments/icons :: icon('chevron-right', 'side-trailing')}"></svg>
+        </a>
+    </div>
+
+    <div class="side-card">
+        <h3 class="side-card-title">Leyenda del semáforo</h3>
+        <div class="legend-row"><span class="legend-dot dot-supera"></span><span>Supera meta</span><em>≥ 110%</em></div>
+        <div class="legend-row"><span class="legend-dot dot-logrado"></span><span>Logrado</span><em>≥ 100%</em></div>
+        <div class="legend-row"><span class="legend-dot dot-casi"></span><span>Casi logrado</span><em>≥ 90%</em></div>
+        <div class="legend-row"><span class="legend-dot dot-moderado"></span><span>Riesgo moderado</span><em>≥ 75%</em></div>
+        <div class="legend-row"><span class="legend-dot dot-alto"></span><span>Riesgo alto</span><em>≥ 60%</em></div>
+        <div class="legend-row"><span class="legend-dot dot-critico"></span><span>Crítico</span><em>&lt; 60%</em></div>
+    </div>
+
+    <div class="side-card">
+        <h3 class="side-card-title">Recursos</h3>
+        <a th:href="@{/api/bsc/metricas}" target="_blank" rel="noopener" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('database', '')}"></svg>
+            <span>API de métricas</span>
+            <svg th:replace="~{fragments/icons :: icon('external', 'side-trailing')}"></svg>
+        </a>
+        <a th:href="@{/api/bsc/kpis}" target="_blank" rel="noopener" class="side-link">
+            <svg th:replace="~{fragments/icons :: icon('link', '')}"></svg>
+            <span>API de indicadores</span>
+            <svg th:replace="~{fragments/icons :: icon('external', 'side-trailing')}"></svg>
+        </a>
+    </div>
+
+    <p class="side-footnote">Datos demostrativos · H2 en memoria</p>
+</aside>
+
+</body>
+</html>

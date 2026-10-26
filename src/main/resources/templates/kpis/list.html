@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catálogo de Indicadores')}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('indicadores')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <div th:if="${mensaje}" class="alert" th:classappend="'alert-' + ${tipoAlerta != null ? tipoAlerta : 'info'}">
+            <svg th:replace="~{fragments/icons :: icon('info', 'icon-sm')}"></svg>
+            <span th:text="${mensaje}">Mensaje</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title" th:text="${soloRiesgo} ? 'Indicadores en riesgo' : 'Catálogo de indicadores'">Catálogo de indicadores</h1>
+                    <p class="page-subtitle" th:text="${soloRiesgo} ? 'Indicadores con semáforo crítico, riesgo alto o moderado' : 'Matriz balanceada por las 4 perspectivas del cuadro de mando integral'">Matriz balanceada por las 4 perspectivas del cuadro de mando integral</p>
+                </div>
+                <div class="header-actions">
+                    <a th:href="@{/api/bsc/kpis}" target="_blank" rel="noopener" class="btn-secondary">
+                        <svg th:replace="~{fragments/icons :: icon('database', 'icon-sm')}"></svg>
+                        API
+                    </a>
+                    <a th:href="@{/kpis/nuevo}" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                        Nuevo indicador
+                    </a>
+                </div>
+            </div>
+
+            <div class="perspective-filters">
+                <a th:href="@{/kpis}" class="filter-chip" th:classappend="${(perspectivaSeleccionada == 'Todas' || perspectivaSeleccionada == null) && !soloRiesgo ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                    Todas
+                    <span class="count" th:text="${totalKpis}">36</span>
+                </a>
+                <a th:if="${soloRiesgo}" th:href="@{/kpis}" class="filter-chip active">
+                    <svg th:replace="~{fragments/icons :: icon('alert', '')}"></svg>
+                    En riesgo
+                    <span class="count" th:text="${kpis.size()}">15</span>
+                </a>
+                <a th:href="@{/kpis(perspectiva='Financiera')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Financiera' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('dollar', '')}"></svg>
+                    Financiera
+                    <span class="count" th:text="${conteoPorPerspectiva['Financiera']}">9</span>
+                </a>
+                <a th:href="@{/kpis(perspectiva='Clientes')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Clientes' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('users', '')}"></svg>
+                    Clientes
+                    <span class="count" th:text="${conteoPorPerspectiva['Clientes']}">9</span>
+                </a>
+                <a th:href="@{/kpis(perspectiva='Procesos internos')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Procesos internos' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                    Procesos internos
+                    <span class="count" th:text="${conteoPorPerspectiva['Procesos internos']}">9</span>
+                </a>
+                <a th:href="@{/kpis(perspectiva='Aprendizaje y crecimiento')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Aprendizaje y crecimiento' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('leaf', '')}"></svg>
+                    Aprendizaje y crecimiento
+                    <span class="count" th:text="${conteoPorPerspectiva['Aprendizaje y crecimiento']}">9</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <section class="table-card">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <h2 class="card-title">Matriz de indicadores</h2>
+                    <span class="card-meta" th:text="${kpis.size()} + ' registros'">36 registros</span>
+                </div>
+                <span class="card-meta">Ponderado por perspectiva</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="bsc-table">
+                    <colgroup>
+                        <col style="width: 92px">
+                        <col style="width: 118px">
+                        <col>
+                        <col style="width: 116px">
+                        <col style="width: 120px">
+                        <col style="width: 132px">
+                        <col style="width: 130px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Perspectiva</th>
+                            <th>Indicador</th>
+                            <th>Meta / real</th>
+                            <th>Cumplimiento</th>
+                            <th>Semáforo</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="kpi : ${kpis}" data-row>
+                            <td>
+                                <span class="id-pill" th:text="${kpi.id}">SW-01</span>
+                            </td>
+                            <td>
+                                <span class="persp-tag">
+                                    <span th:if="${kpi.perspectiva == 'Financiera'}" class="persp-financiera">
+                                        <svg th:replace="~{fragments/icons :: icon('dollar', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Clientes'}" class="persp-clientes">
+                                        <svg th:replace="~{fragments/icons :: icon('users', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Procesos internos'}" class="persp-procesos">
+                                        <svg th:replace="~{fragments/icons :: icon('layers', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Aprendizaje y crecimiento'}" class="persp-aprendizaje">
+                                        <svg th:replace="~{fragments/icons :: icon('leaf', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span class="truncate"
+                                          th:text="${kpi.perspectiva == 'Aprendizaje y crecimiento' ? 'Aprendizaje' : (kpi.perspectiva == 'Procesos internos' ? 'Procesos' : kpi.perspectiva)}"
+                                          th:title="${kpi.perspectiva}">Financiera</span>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-main" th:text="${kpi.nombre}" th:title="${kpi.nombre}">Margen operativo GAAP</span>
+                                    <span class="cell-sub" th:text="${kpi.objetivoEstrategico}" th:title="${kpi.objetivoEstrategico}">OBJ-F1 · Mejorar la rentabilidad</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-num" th:text="${kpi.meta} + ' ' + ${kpi.unidad}">2.0 %</span>
+                                    <span class="cell-sub" th:text="'Real ' + ${kpi.real}">Real 1.5</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="cell-num" th:text="${kpi.porcentajeCumplimiento} + '%'">75.0%</span>
+                            </td>
+                            <td>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('SUPERA')}" class="status-pill pill-supera">Supera meta</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('CASI')}" class="status-pill pill-casi">Casi logrado</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('LOGRADO') && !kpi.estadoSemaforo.contains('CASI')}" class="status-pill pill-logrado">Logrado</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('MODERADO')}" class="status-pill pill-moderado">Moderado</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('ALTO')}" class="status-pill pill-alto">Alto</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('CRÍTICO')}" class="status-pill pill-critico">Crítico</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{'/kpis/detalle/' + ${kpi.id}}" class="btn-ghost-sm" title="Ver detalle">
+                                        <svg th:replace="~{fragments/icons :: icon('eye', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/kpis/editar/' + ${kpi.id}}" class="btn-ghost-sm" title="Editar">
+                                        <svg th:replace="~{fragments/icons :: icon('pencil', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/kpis/eliminar/' + ${kpi.id}}" class="btn-ghost-sm is-danger" title="Eliminar"
+                                       onclick="return confirm('¿Eliminar este indicador?');">
+                                        <svg th:replace="~{fragments/icons :: icon('trash', '')}"></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="filtro-vacio" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <svg th:replace="~{fragments/icons :: icon('search', '')}"></svg>
+                </div>
+                <div class="title">Sin coincidencias</div>
+                <p>Prueba con otro término de búsqueda.</p>
+            </div>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

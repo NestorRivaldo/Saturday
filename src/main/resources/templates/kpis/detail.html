@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ficha técnica: ' + ${kpi.id})}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('indicadores')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- Ficha del indicador -->
+        <section class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <div class="flex gap-2" style="gap: 8px; margin-bottom: 6px;">
+                        <span class="id-pill" th:text="${kpi.id}">SW-01</span>
+
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('MODERADO')}" class="status-pill pill-moderado">Riesgo moderado</span>
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('ALTO')}" class="status-pill pill-alto">Riesgo alto</span>
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('CRÍTICO')}" class="status-pill pill-critico">Crítico</span>
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('CASI')}" class="status-pill pill-casi">Casi logrado</span>
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('LOGRADO') && !kpi.estadoSemaforo.contains('CASI')}" class="status-pill pill-logrado">Logrado</span>
+                        <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('SUPERA')}" class="status-pill pill-supera">Supera meta</span>
+                    </div>
+
+                    <h1 class="page-title" th:text="${kpi.nombre}">Margen operativo GAAP</h1>
+                    <p class="page-subtitle" th:text="${kpi.objetivoEstrategico}">OBJ-F1: Mejorar la rentabilidad sostenible</p>
+                </div>
+
+                <div class="header-actions">
+                    <a th:href="@{/kpis}" class="btn-secondary">
+                        <svg th:replace="~{fragments/icons :: icon('arrow-left', 'icon-sm')}"></svg>
+                        Volver
+                    </a>
+                    <a th:href="@{'/kpis/editar/' + ${kpi.id}}" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('pencil', 'icon-sm')}"></svg>
+                        Editar indicador
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Métricas -->
+        <section class="stat-grid">
+            <div class="stat-tile">
+                <div class="stat-label">Meta propuesta</div>
+                <div class="stat-value" th:text="${kpi.meta} + ' ' + ${kpi.unidad}">2.0 %</div>
+                <div class="stat-note">Objetivo comprometido</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-label">Resultado real</div>
+                <div class="stat-value" th:text="${kpi.real} + ' ' + ${kpi.unidad}">1.5 %</div>
+                <div class="stat-note" th:text="${kpi.periodo}">2025 anual</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-label">Cumplimiento</div>
+                <div class="stat-value" style="color: var(--accent);" th:text="${kpi.porcentajeCumplimiento} + '%'">75.0%</div>
+                <div class="stat-note" th:text="'Sentido: ' + ${kpi.direccion}">Mayor es mejor</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-label">Perspectiva</div>
+                <div class="stat-value" style="font-size: 15px;" th:text="${kpi.perspectiva}">Financiera</div>
+                <div class="stat-note" th:text="'Tipo de dato: ' + ${kpi.tipoDato}">Público</div>
+            </div>
+        </section>
+
+        <section class="grid-2">
+            <!-- Metodología -->
+            <div class="table-card">
+                <div class="card-head">
+                    <div class="card-head-left">
+                        <h2 class="card-title">Metodología de cálculo</h2>
+                    </div>
+                    <span class="card-meta" th:text="${kpi.unidad}">%</span>
+                </div>
+                <div style="padding: 18px;">
+                    <p class="detail-text" th:if="${kpi.direccion == 'Mayor es mejor'}">
+                        <code>% Cumplimiento = (Real / Meta) × 100</code>
+                    </p>
+                    <p class="detail-text" style="margin-top: 8px;" th:if="${kpi.direccion == 'Mayor es mejor'}">
+                        (<span th:text="${kpi.real}"></span> / <span th:text="${kpi.meta}"></span>) × 100 =
+                        <strong th:text="${kpi.porcentajeCumplimiento} + '%'"></strong>
+                    </p>
+
+                    <p class="detail-text" th:if="${kpi.direccion == 'Menor es mejor'}">
+                        <code>% Cumplimiento = (Meta / Real) × 100</code>
+                    </p>
+                    <p class="detail-text" style="margin-top: 8px;" th:if="${kpi.direccion == 'Menor es mejor'}">
+                        (<span th:text="${kpi.meta}"></span> / <span th:text="${kpi.real}"></span>) × 100 =
+                        <strong th:text="${kpi.porcentajeCumplimiento} + '%'"></strong>
+                    </p>
+
+                    <div th:if="${kpi.nota != null && !kpi.nota.isEmpty()}" style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);">
+                        <div class="stat-label" style="margin-bottom: 4px;">Nota metodológica</div>
+                        <p class="detail-text" th:text="${kpi.nota}">Descripción</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos de la ficha -->
+            <div class="table-card">
+                <div class="card-head">
+                    <div class="card-head-left">
+                        <h2 class="card-title">Datos de la ficha</h2>
+                    </div>
+                    <span class="card-meta" th:text="${kpi.periodo}">2025 anual</span>
+                </div>
+
+                <div style="padding: 6px 18px 16px;">
+                    <div class="detail-row">
+                        <span>Perspectiva</span>
+                        <strong th:text="${kpi.perspectiva}">Financiera</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Sentido del indicador</span>
+                        <strong th:text="${kpi.direccion}">Mayor es mejor</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Unidad de medida</span>
+                        <strong th:text="${kpi.unidad}">%</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Periodo evaluado</span>
+                        <strong th:text="${kpi.periodo}">2025 anual</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Tipo de dato</span>
+                        <strong th:text="${kpi.tipoDato}">Público</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Código de fuente</span>
+                        <strong th:text="${kpi.fuente != null && !kpi.fuente.isEmpty() ? kpi.fuente : 'No registrada'}">S1</strong>
+                    </div>
+                    <div class="detail-row" th:if="${kpi.urlFuente != null && !kpi.urlFuente.isEmpty()}" style="border-bottom: 0;">
+                        <span>Fuente oficial</span>
+                        <a th:href="${kpi.urlFuente}" target="_blank" rel="noopener" class="btn-ghost-sm" style="max-width: 220px;">
+                            <svg th:replace="~{fragments/icons :: icon('external', '')}"></svg>
+                            <span class="truncate" th:text="${kpi.urlFuente}">https://...</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

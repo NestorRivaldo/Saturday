@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('indicadores')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title" th:text="${titulo}">Registrar indicador</h1>
+                    <p class="page-subtitle">El sistema calcula automáticamente el porcentaje de cumplimiento y asigna el semáforo</p>
+                </div>
+                <a th:href="@{/kpis}" class="btn-secondary">
+                    <svg th:replace="~{fragments/icons :: icon('arrow-left', 'icon-sm')}"></svg>
+                    Volver
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <section class="form-card" style="max-width: 980px;">
+            <form th:action="@{/kpis/guardar}" th:object="${kpi}" method="post">
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+                        Identificación del indicador
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="kpi-id">Código / ID</label>
+                            <input id="kpi-id" type="text" th:field="*{id}" placeholder="Dejar vacío para autogenerar"
+                                   th:readonly="${kpi.id != null && !kpi.id.isEmpty()}">
+                            <span class="field-help" th:if="${kpi.id != null && !kpi.id.isEmpty()}">El código no se puede modificar.</span>
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-perspectiva">Perspectiva estratégica <span class="req">*</span></label>
+                            <select id="kpi-perspectiva" th:field="*{perspectiva}" required>
+                                <option value="">Seleccione…</option>
+                                <option value="Financiera">Financiera</option>
+                                <option value="Clientes">Clientes</option>
+                                <option value="Procesos internos">Procesos internos</option>
+                                <option value="Aprendizaje y crecimiento">Aprendizaje y crecimiento</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="kpi-objetivo">Objetivo estratégico relacionado <span class="req">*</span></label>
+                            <input id="kpi-objetivo" type="text" th:field="*{objetivoEstrategico}"
+                                   placeholder="Ej.: OBJ-F1 · Mejorar la rentabilidad sostenible" required>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="kpi-nombre">Nombre del indicador <span class="req">*</span></label>
+                            <input id="kpi-nombre" type="text" th:field="*{nombre}" placeholder="Ej.: Margen operativo GAAP" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('gauge', '')}"></svg>
+                        Medición y metas
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="kpi-direccion">Sentido del indicador <span class="req">*</span></label>
+                            <select id="kpi-direccion" th:field="*{direccion}" required>
+                                <option value="Mayor es mejor">Mayor es mejor</option>
+                                <option value="Menor es mejor">Menor es mejor</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-unidad">Unidad de medida <span class="req">*</span></label>
+                            <input id="kpi-unidad" type="text" th:field="*{unidad}" placeholder="%, US$ MM, centavos…" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-meta">Meta propuesta <span class="req">*</span></label>
+                            <input id="kpi-meta" type="number" step="any" th:field="*{meta}" placeholder="Ej.: 2.0" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-real">Resultado real <span class="req">*</span></label>
+                            <input id="kpi-real" type="number" step="any" th:field="*{real}" placeholder="Ej.: 1.5" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-periodo">Periodo de evaluación</label>
+                            <input id="kpi-periodo" type="text" th:field="*{periodo}" placeholder="Ej.: 2025 anual">
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-tipo">Tipo de dato</label>
+                            <select id="kpi-tipo" th:field="*{tipoDato}">
+                                <option value="Público">Público</option>
+                                <option value="Calculado público">Calculado público</option>
+                                <option value="Ficticio">Ficticio / hipotético</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('book', '')}"></svg>
+                        Fuente y metodología
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="kpi-fuente">Código de fuente</label>
+                            <input id="kpi-fuente" type="text" th:field="*{fuente}" placeholder="Ej.: S1 (10-K SEC)">
+                        </div>
+
+                        <div class="field">
+                            <label for="kpi-url">URL oficial de respaldo</label>
+                            <input id="kpi-url" type="url" th:field="*{urlFuente}" placeholder="https://…">
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="kpi-nota">Notas metodológicas / criterio</label>
+                            <textarea id="kpi-nota" th:field="*{nota}" rows="3"
+                                      placeholder="Detalle de la fórmula, criterio de medición o contexto de la métrica…"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/kpis}" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('check', 'icon-sm')}"></svg>
+                        Guardar y calcular semáforo
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

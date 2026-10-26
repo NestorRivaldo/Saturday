@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Resumen ejecutivo')}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('inicio')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- ======================= CABECERA EJECUTIVA ======================= -->
+        <section class="hero-card">
+            <div class="hero-content">
+                <div>
+                    <span class="hero-badge">Tablero ejecutivo</span>
+                    <h1 class="hero-title">Balanced Scorecard</h1>
+                    <p class="hero-subtitle">Monitoreo integral del desempeño estratégico · Southwest Airlines (ejercicio 2025)</p>
+                    <div class="hero-meta">
+                        <span>
+                            <svg th:replace="~{fragments/icons :: icon('calendar', '')}"></svg>
+                            Cierre anual 2025
+                        </span>
+                        <span>
+                            <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                            4 perspectivas
+                        </span>
+                        <span>
+                            <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+                            <span th:text="${totalKpis} + ' indicadores'">36 indicadores</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="hero-date">
+                    <svg th:replace="~{fragments/icons :: icon('calendar', '')}"></svg>
+                    <div>
+                        <strong th:text="${fechaHoy}">25 oct. 2026</strong>
+                        <small>Corte de información</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= MÉTRICAS GLOBALES ======================= -->
+        <section class="kpi-cards-grid">
+            <a th:href="@{/kpis}" class="metric-card accent-blue" title="Ver el catálogo de indicadores">
+                <div class="metric-header">
+                    <div class="metric-icon-circle icon-blue">
+                        <svg th:replace="~{fragments/icons :: icon('activity', '')}"></svg>
+                    </div>
+                    <span class="metric-label">Cumplimiento global</span>
+                </div>
+                <div class="metric-number" th:text="${cumplimientoGlobal} + '%'">89.71%</div>
+                <div class="metric-caption" th:text="'Promedio de ' + ${totalKpis} + ' indicadores'">Promedio de 36 indicadores</div>
+                <div class="metric-footer">
+                    <span class="trend-badge trend-up">
+                        <svg th:replace="~{fragments/icons :: icon('trending-up', '')}"></svg>
+                        2.4%
+                    </span>
+                    <svg class="sparkline-svg" viewBox="0 0 72 24" fill="none" aria-hidden="true">
+                        <path d="M2 19L16 16.5 30 18.5 44 11.5 58 13 70 5.5" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </a>
+
+            <a th:href="@{/kpis}" class="metric-card accent-violet" title="Ver todos los indicadores">
+                <div class="metric-header">
+                    <div class="metric-icon-circle icon-purple">
+                        <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+                    </div>
+                    <span class="metric-label">Total indicadores</span>
+                </div>
+                <div class="metric-number" th:text="${totalKpis}">36</div>
+                <div class="metric-caption">Distribuidos en 4 perspectivas</div>
+                <div class="metric-footer">
+                    <span class="trend-badge trend-neutral">
+                        <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                        BSC completo
+                    </span>
+                    <svg class="sparkline-svg" viewBox="0 0 72 24" fill="none" aria-hidden="true">
+                        <path d="M2 14h68" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 5"/>
+                    </svg>
+                </div>
+            </a>
+
+            <a th:href="@{/kpis(soloRiesgo='true')}" class="metric-card accent-orange is-risk" title="Ver indicadores en riesgo">
+                <div class="metric-header">
+                    <div class="metric-icon-circle icon-orange">
+                        <svg th:replace="~{fragments/icons :: icon('alert', '')}"></svg>
+                    </div>
+                    <span class="metric-label" style="color: var(--orange);">Indicadores en riesgo</span>
+                </div>
+                <div class="metric-number" th:text="${kpisEnRiesgo.size()}">15</div>
+                <div class="metric-caption">Requieren plan de acción</div>
+                <div class="metric-footer">
+                    <span class="trend-badge trend-alert">Prioridad alta</span>
+                    <svg class="sparkline-svg" viewBox="0 0 72 24" fill="none" aria-hidden="true">
+                        <path d="M2 19 16 16.5 30 17.5 44 13 58 8.5 70 4.5" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </a>
+
+            <a th:href="@{/planes}" class="metric-card accent-green" title="Gestionar planes de acción">
+                <div class="metric-header">
+                    <div class="metric-icon-circle icon-green">
+                        <svg th:replace="~{fragments/icons :: icon('dollar', '')}"></svg>
+                    </div>
+                    <span class="metric-label">Presupuesto</span>
+                </div>
+                <div class="metric-number" style="font-size: 23px;" th:text="'US$ ' + ${#numbers.formatDecimal(presupuestoTotal, 0, 'COMMA', 0, 'POINT')}">US$ 945,000</div>
+                <div class="metric-caption">Inversión en planes de acción</div>
+                <div class="metric-footer">
+                    <span class="trend-badge trend-down">
+                        <svg th:replace="~{fragments/icons :: icon('briefcase', '')}"></svg>
+                        Cartera activa
+                    </span>
+                    <svg class="sparkline-svg" viewBox="0 0 72 24" fill="none" aria-hidden="true">
+                        <path d="M2 7 16 9 30 8 44 14 58 15.5 70 19" stroke="#0e9f6e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </a>
+        </section>
+
+        <!-- ======================= CUMPLIMIENTO POR PERSPECTIVA ======================= -->
+        <section class="perspectives-strip">
+            <div class="strip-top">
+                <h2 class="strip-title">Cumplimiento por perspectiva</h2>
+                <a th:href="@{/kpis}" class="see-all-link">
+                    Ver todas las metas
+                    <svg th:replace="~{fragments/icons :: icon('arrow-right', 'icon-sm')}"></svg>
+                </a>
+            </div>
+
+            <div class="perspectives-cards-row">
+                <div class="persp-box">
+                    <div class="persp-box-header">
+                        <div class="persp-box-icon icon-orange">
+                            <svg th:replace="~{fragments/icons :: icon('dollar', '')}"></svg>
+                        </div>
+                        <span class="persp-box-name">Financiera</span>
+                    </div>
+                    <div class="persp-box-val-row">
+                        <span class="persp-box-val" th:text="${cumplimientoPerspectivas['Financiera']} + '%'">93.53%</span>
+                        <span class="mini-badge badge-meta">Meta anual</span>
+                    </div>
+                    <div class="persp-progress-track">
+                        <div class="persp-progress-fill" th:style="'width: ' + ${cumplimientoPerspectivas['Financiera']} + '%; background: #0284c7;'"></div>
+                    </div>
+                    <a th:href="@{/kpis(perspectiva='Financiera')}" class="persp-link">
+                        <span th:text="'Ver ' + ${conteoPorPerspectiva['Financiera']} + ' indicadores'">Ver 9 indicadores</span>
+                        <svg th:replace="~{fragments/icons :: icon('chevron-right', 'icon-sm')}"></svg>
+                    </a>
+                </div>
+
+                <div class="persp-box">
+                    <div class="persp-box-header">
+                        <div class="persp-box-icon icon-blue">
+                            <svg th:replace="~{fragments/icons :: icon('users', '')}"></svg>
+                        </div>
+                        <span class="persp-box-name">Clientes</span>
+                    </div>
+                    <div class="persp-box-val-row">
+                        <span class="persp-box-val" th:text="${cumplimientoPerspectivas['Clientes']} + '%'">93.92%</span>
+                        <span class="mini-badge badge-meta">Meta anual</span>
+                    </div>
+                    <div class="persp-progress-track">
+                        <div class="persp-progress-fill" th:style="'width: ' + ${cumplimientoPerspectivas['Clientes']} + '%; background: #2563eb;'"></div>
+                    </div>
+                    <a th:href="@{/kpis(perspectiva='Clientes')}" class="persp-link">
+                        <span th:text="'Ver ' + ${conteoPorPerspectiva['Clientes']} + ' indicadores'">Ver 9 indicadores</span>
+                        <svg th:replace="~{fragments/icons :: icon('chevron-right', 'icon-sm')}"></svg>
+                    </a>
+                </div>
+
+                <div class="persp-box">
+                    <div class="persp-box-header">
+                        <div class="persp-box-icon icon-purple">
+                            <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                        </div>
+                        <span class="persp-box-name">Procesos internos</span>
+                    </div>
+                    <div class="persp-box-val-row">
+                        <span class="persp-box-val" th:text="${cumplimientoPerspectivas['Procesos internos']} + '%'">88.87%</span>
+                        <span class="mini-badge badge-meta">Meta anual</span>
+                    </div>
+                    <div class="persp-progress-track">
+                        <div class="persp-progress-fill" th:style="'width: ' + ${cumplimientoPerspectivas['Procesos internos']} + '%; background: #7c3aed;'"></div>
+                    </div>
+                    <a th:href="@{/kpis(perspectiva='Procesos internos')}" class="persp-link">
+                        <span th:text="'Ver ' + ${conteoPorPerspectiva['Procesos internos']} + ' indicadores'">Ver 9 indicadores</span>
+                        <svg th:replace="~{fragments/icons :: icon('chevron-right', 'icon-sm')}"></svg>
+                    </a>
+                </div>
+
+                <div class="persp-box">
+                    <div class="persp-box-header">
+                        <div class="persp-box-icon icon-green">
+                            <svg th:replace="~{fragments/icons :: icon('leaf', '')}"></svg>
+                        </div>
+                        <span class="persp-box-name">Aprendizaje</span>
+                    </div>
+                    <div class="persp-box-val-row">
+                        <span class="persp-box-val" th:text="${cumplimientoPerspectivas['Aprendizaje y crecimiento']} + '%'">82.52%</span>
+                        <span class="mini-badge badge-meta">Meta anual</span>
+                    </div>
+                    <div class="persp-progress-track">
+                        <div class="persp-progress-fill" th:style="'width: ' + ${cumplimientoPerspectivas['Aprendizaje y crecimiento']} + '%; background: #0e9f6e;'"></div>
+                    </div>
+                    <a th:href="@{/kpis(perspectiva='Aprendizaje y crecimiento')}" class="persp-link">
+                        <span th:text="'Ver ' + ${conteoPorPerspectiva['Aprendizaje y crecimiento']} + ' indicadores'">Ver 9 indicadores</span>
+                        <svg th:replace="~{fragments/icons :: icon('chevron-right', 'icon-sm')}"></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= GRÁFICOS ======================= -->
+        <section class="grid-2">
+            <div class="table-card">
+                <div class="panel-head">
+                    <h3>Cumplimiento comparado</h3>
+                    <span class="card-meta">Porcentaje sobre la meta</span>
+                </div>
+                <div style="padding: 14px 16px 8px;">
+                    <div class="chart-box">
+                        <canvas id="perspectivaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="panel-head">
+                    <h3>Distribución por estado</h3>
+                    <span class="card-meta">Semáforo de indicadores</span>
+                </div>
+                <div style="padding: 14px 16px 8px;">
+                    <div class="chart-box">
+                        <canvas id="semaforoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= INDICADORES EN RIESGO ======================= -->
+        <section class="table-card">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <h2 class="card-title">Indicadores que requieren acción correctiva</h2>
+                    <span class="card-meta" th:text="${kpisEnRiesgo.size()} + ' en seguimiento'">15 en seguimiento</span>
+                </div>
+                <a th:href="@{/kpis}" class="see-all-link">
+                    Ver catálogo
+                    <svg th:replace="~{fragments/icons :: icon('arrow-right', 'icon-sm')}"></svg>
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="bsc-table">
+                    <colgroup>
+                        <col style="width: 88px">
+                        <col style="width: 130px">
+                        <col>
+                        <col style="width: 116px">
+                        <col style="width: 118px">
+                        <col style="width: 126px">
+                        <col style="width: 96px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Perspectiva</th>
+                            <th>Indicador</th>
+                            <th>Meta / real</th>
+                            <th>Cumplimiento</th>
+                            <th>Semáforo</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="kpi : ${kpisEnRiesgo}" data-row>
+                            <td><span class="id-pill" th:text="${kpi.id}">SW-01</span></td>
+                            <td>
+                                <span class="persp-tag">
+                                    <span th:if="${kpi.perspectiva == 'Financiera'}" class="persp-financiera">
+                                        <svg th:replace="~{fragments/icons :: icon('dollar', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Clientes'}" class="persp-clientes">
+                                        <svg th:replace="~{fragments/icons :: icon('users', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Procesos internos'}" class="persp-procesos">
+                                        <svg th:replace="~{fragments/icons :: icon('layers', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${kpi.perspectiva == 'Aprendizaje y crecimiento'}" class="persp-aprendizaje">
+                                        <svg th:replace="~{fragments/icons :: icon('leaf', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:text="${kpi.perspectiva}" th:title="${kpi.perspectiva}" class="truncate">Financiera</span>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-main" th:text="${kpi.nombre}">Margen operativo GAAP</span>
+                                    <span class="cell-sub" th:text="${kpi.objetivoEstrategico}">OBJ-F1 · Mejorar la rentabilidad</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-num" th:text="${kpi.meta} + ' ' + ${kpi.unidad}">2.0 %</span>
+                                    <span class="cell-sub" th:text="'Real ' + ${kpi.real} + ' ' + ${kpi.unidad}">Real 1.5 %</span>
+                                </div>
+                            </td>
+                            <td><span class="cell-num" th:text="${kpi.porcentajeCumplimiento} + '%'">75.0%</span></td>
+                            <td>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('MODERADO')}" class="status-pill pill-moderado">Moderado</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('ALTO')}" class="status-pill pill-alto">Alto</span>
+                                <span th:if="${kpi.estadoSemaforo != null && kpi.estadoSemaforo.contains('CRÍTICO')}" class="status-pill pill-critico">Crítico</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{'/kpis/detalle/' + ${kpi.id}}" class="btn-ghost-sm" title="Ver detalle">
+                                        <svg th:replace="~{fragments/icons :: icon('eye', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/kpis/editar/' + ${kpi.id}}" class="btn-ghost-sm" title="Editar">
+                                        <svg th:replace="~{fragments/icons :: icon('pencil', '')}"></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ======================= ACCESOS ======================= -->
+        <section class="bottom-nav-grid">
+            <a th:href="@{/kpis}" class="bottom-card">
+                <div class="bottom-icon-box icon-purple">
+                    <svg th:replace="~{fragments/icons :: icon('target', '')}"></svg>
+                </div>
+                <div>
+                    <div class="bottom-card-title">Indicadores</div>
+                    <div class="bottom-card-desc">Catálogo por perspectiva</div>
+                </div>
+            </a>
+
+            <a th:href="@{/planes}" class="bottom-card">
+                <div class="bottom-icon-box icon-blue">
+                    <svg th:replace="~{fragments/icons :: icon('clipboard', '')}"></svg>
+                </div>
+                <div>
+                    <div class="bottom-card-title">Planes de acción</div>
+                    <div class="bottom-card-desc">Iniciativas y presupuesto</div>
+                </div>
+            </a>
+
+            <a th:href="@{/api/bsc/metricas}" target="_blank" rel="noopener" class="bottom-card">
+                <div class="bottom-icon-box icon-green">
+                    <svg th:replace="~{fragments/icons :: icon('database', '')}"></svg>
+                </div>
+                <div>
+                    <div class="bottom-card-title">API de métricas</div>
+                    <div class="bottom-card-desc">Datos del tablero en JSON</div>
+                </div>
+            </a>
+
+            <a th:href="@{/mediciones}" class="bottom-card">
+                <div class="bottom-icon-box icon-orange">
+                    <svg th:replace="~{fragments/icons :: icon('chart', '')}"></svg>
+                </div>
+                <div>
+                    <div class="bottom-card-title">Mediciones</div>
+                    <div class="bottom-card-desc">Seguimiento de valores</div>
+                </div>
+            </a>
+        </section>
+
+        <!-- ======================= GRÁFICOS (Chart.js) ======================= -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+        <script th:inline="javascript">
+            const cumplimientoData = /*[[${cumplimientoPerspectivas}]]*/ {};
+            const semaforoData = /*[[${semaforoCounts}]]*/ {};
+
+            (function () {
+                const canvasPerspectiva = document.getElementById('perspectivaChart');
+                const canvasSemaforo = document.getElementById('semaforoChart');
+                const muted = getComputedStyle(document.documentElement).getPropertyValue('--muted') || '#64748b';
+                const grid = getComputedStyle(document.documentElement).getPropertyValue('--line') || '#e3e8f1';
+
+                if (typeof Chart === 'undefined') {
+                    [canvasPerspectiva, canvasSemaforo].forEach(function (canvas) {
+                        if (!canvas) return;
+                        const contenedor = canvas.parentElement;
+                        const aviso = document.createElement('div');
+                        aviso.className = 'empty-state';
+                        aviso.innerHTML = '<div class="title">Gráfico no disponible</div>' +
+                            '<p>Se requiere conexión a Internet para cargar Chart.js.</p>';
+                        canvas.remove();
+                        contenedor.appendChild(aviso);
+                    });
+                    return;
+                }
+
+                Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+                Chart.defaults.font.size = 11;
+                Chart.defaults.color = muted;
+
+                new Chart(canvasPerspectiva, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Financiera', 'Clientes', 'Procesos', 'Aprendizaje'],
+                        datasets: [{
+                            label: 'Cumplimiento',
+                            data: [
+                                cumplimientoData['Financiera'] || 0,
+                                cumplimientoData['Clientes'] || 0,
+                                cumplimientoData['Procesos internos'] || 0,
+                                cumplimientoData['Aprendizaje y crecimiento'] || 0
+                            ],
+                            backgroundColor: ['#0284c7', '#2563eb', '#7c3aed', '#0e9f6e'],
+                            borderRadius: 6,
+                            maxBarThickness: 54
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, border: { display: false } },
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: 110,
+                                grid: { color: grid, drawTicks: false },
+                                border: { display: false },
+                                ticks: { callback: value => value + '%', padding: 6 }
+                            }
+                        }
+                    }
+                });
+
+                const etiquetasSemaforo = {
+                    SUPERA_META: 'Supera meta',
+                    LOGRADO: 'Logrado',
+                    CASI_LOGRADO: 'Casi logrado',
+                    RIESGO_MODERADO: 'Riesgo moderado',
+                    RIESGO_ALTO: 'Riesgo alto',
+                    CRITICO: 'Crítico'
+                };
+                const colores = {
+                    SUPERA_META: '#7c3aed',
+                    LOGRADO: '#10b981',
+                    CASI_LOGRADO: '#f59e0b',
+                    RIESGO_MODERADO: '#f97316',
+                    RIESGO_ALTO: '#ef4444',
+                    CRITICO: '#991b1b'
+                };
+                const claves = Object.keys(semaforoData);
+
+                new Chart(canvasSemaforo, {
+                    type: 'doughnut',
+                    data: {
+                        labels: claves.map(k => etiquetasSemaforo[k] || k),
+                        datasets: [{
+                            data: claves.map(k => semaforoData[k]),
+                            backgroundColor: claves.map(k => colores[k] || '#94a3b8'),
+                            borderWidth: 0,
+                            spacing: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '66%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 9, boxHeight: 9, usePointStyle: true, pointStyle: 'rectRounded', padding: 14 }
+                            }
+                        }
+                    }
+                });
+            })();
+        </script>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

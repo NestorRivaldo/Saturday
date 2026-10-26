@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registro de Mediciones')}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('mediciones')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <div th:if="${mensaje}" class="alert" th:classappend="'alert-' + ${tipoAlerta != null ? tipoAlerta : 'info'}">
+            <svg th:replace="~{fragments/icons :: icon('info', 'icon-sm')}"></svg>
+            <span th:text="${mensaje}">Mensaje</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title">Registro de mediciones</h1>
+                    <p class="page-subtitle" th:if="${kpi != null}" th:text="'Historial de mediciones del indicador: ' + ${kpi.nombre}">Historial del indicador</p>
+                    <p class="page-subtitle" th:if="${kpi == null}">Historial de todas las mediciones registradas</p>
+                </div>
+                <a th:href="@{/mediciones/nuevo}" class="btn-primary">
+                    <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                    Nueva medición
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <section class="table-card">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <h2 class="card-title">Historial de valores</h2>
+                    <span class="card-meta" th:text="${mediciones.size()} + ' mediciones'">0 mediciones</span>
+                </div>
+                <span class="card-meta">Cada registro alimenta el avance de un indicador</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="bsc-table">
+                    <colgroup>
+                        <col style="width: 74px">
+                        <col style="width: 132px">
+                        <col style="width: 108px">
+                        <col style="width: 118px">
+                        <col style="width: 96px">
+                        <col style="width: 150px">
+                        <col>
+                        <col style="width: 98px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Indicador</th>
+                            <th>Período</th>
+                            <th>Fecha</th>
+                            <th>Valor</th>
+                            <th>Responsable</th>
+                            <th>Notas</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(mediciones)}">
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg th:replace="~{fragments/icons :: icon('chart', '')}"></svg>
+                                    </div>
+                                    <div class="title">Aún no hay mediciones registradas</div>
+                                    <p>Registra la primera medición para hacer seguimiento al avance de un indicador.</p>
+                                    <a th:href="@{/mediciones/nuevo}" class="btn-primary">
+                                        <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                                        Nueva medición
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:each="medicion : ${mediciones}" data-row>
+                            <td>
+                                <span class="id-pill" th:text="${medicion.id}">1</span>
+                            </td>
+                            <td>
+                                <span class="cell-main" th:text="${medicion.kpiId}">SW-01</span>
+                            </td>
+                            <td>
+                                <span class="cell-muted" th:text="${medicion.periodo}">2026-01</span>
+                            </td>
+                            <td>
+                                <span class="cell-muted" th:text="${medicion.fecha}">2026-01-28</span>
+                            </td>
+                            <td>
+                                <span class="cell-num" th:text="${medicion.valor}">12.4</span>
+                            </td>
+                            <td>
+                                <span class="cell-main" th:text="${medicion.responsable}" th:title="${medicion.responsable}">Ana Pérez</span>
+                            </td>
+                            <td>
+                                <span class="cell-muted" th:text="${medicion.notas}" th:title="${medicion.notas}">Notas</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{'/mediciones/editar/' + ${medicion.id}}" class="btn-ghost-sm" title="Editar">
+                                        <svg th:replace="~{fragments/icons :: icon('pencil', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/mediciones/eliminar/' + ${medicion.id}}" class="btn-ghost-sm is-danger" title="Eliminar"
+                                       onclick="return confirm('¿Eliminar esta medición?');">
+                                        <svg th:replace="~{fragments/icons :: icon('trash', '')}"></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="filtro-vacio" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <svg th:replace="~{fragments/icons :: icon('search', '')}"></svg>
+                </div>
+                <div class="title">Sin coincidencias</div>
+                <p>Prueba con otro término de búsqueda.</p>
+            </div>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

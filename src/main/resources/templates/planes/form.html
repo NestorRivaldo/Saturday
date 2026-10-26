@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('planes')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title" th:text="${titulo}">Registrar plan de acción</h1>
+                    <p class="page-subtitle">Vincula una iniciativa correctiva a un indicador estratégico en riesgo</p>
+                </div>
+                <a th:href="@{/planes}" class="btn-secondary">
+                    <svg th:replace="~{fragments/icons :: icon('arrow-left', 'icon-sm')}"></svg>
+                    Volver
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <section class="form-card" style="max-width: 980px;">
+            <form th:action="@{/planes/guardar}" th:object="${plan}" method="post">
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('clipboard', '')}"></svg>
+                        Contexto del plan
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="plan-id">Código del plan</label>
+                            <input id="plan-id" type="text" th:field="*{id}" placeholder="Dejar vacío para autogenerar"
+                                   th:readonly="${plan.id != null && !plan.id.isEmpty()}">
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-perspectiva">Perspectiva <span class="req">*</span></label>
+                            <select id="plan-perspectiva" th:field="*{perspectiva}" required>
+                                <option value="">Seleccione…</option>
+                                <option value="Procesos internos">Procesos internos</option>
+                                <option value="Financiera">Financiera</option>
+                                <option value="Clientes">Clientes</option>
+                                <option value="Aprendizaje y crecimiento">Aprendizaje y crecimiento</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="plan-indicador">Indicador / problema atendido <span class="req">*</span></label>
+                            <input id="plan-indicador" type="text" th:field="*{indicadorNombre}"
+                                   placeholder="Ej.: Llegadas puntuales" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-riesgo">Nivel de riesgo detectado</label>
+                            <select id="plan-riesgo" th:field="*{nivelRiesgo}">
+                                <option value="Riesgo moderado">Riesgo moderado</option>
+                                <option value="Riesgo alto">Riesgo alto</option>
+                                <option value="Crítico">Crítico</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-estado">Estado del plan</label>
+                            <select id="plan-estado" th:field="*{estado}">
+                                <option value="Propuesto">Propuesto</option>
+                                <option value="En ejecución">En ejecución</option>
+                                <option value="Completado">Completado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('alert', '')}"></svg>
+                        Diagnóstico y acción
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field field-full">
+                            <label for="plan-causa">Causa raíz identificada</label>
+                            <textarea id="plan-causa" th:field="*{causa}" rows="3"
+                                      placeholder="Explica qué origina la desviación del indicador…"></textarea>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="plan-accion">Acción correctiva propuesta <span class="req">*</span></label>
+                            <textarea id="plan-accion" th:field="*{accionCorrectiva}" rows="4"
+                                      placeholder="Detalle de las actividades a ejecutar para cerrar la brecha…" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('users', '')}"></svg>
+                        Ejecución y presupuesto
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="plan-responsable">Área / responsable <span class="req">*</span></label>
+                            <input id="plan-responsable" type="text" th:field="*{responsable}"
+                                   placeholder="Ej.: Dirección de Operaciones" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-presupuesto">Presupuesto estimado (US$)</label>
+                            <input id="plan-presupuesto" type="number" step="any" th:field="*{presupuesto}" placeholder="250000">
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-inicio">Fecha de inicio</label>
+                            <input id="plan-inicio" type="date" th:field="*{fechaInicio}">
+                        </div>
+
+                        <div class="field">
+                            <label for="plan-limite">Fecha límite</label>
+                            <input id="plan-limite" type="date" th:field="*{fechaLimite}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/planes}" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('check', 'icon-sm')}"></svg>
+                        Guardar plan de acción
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

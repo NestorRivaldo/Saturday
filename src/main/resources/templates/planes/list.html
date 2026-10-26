@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Planes de Acción Correctiva')}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('planes')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <div th:if="${mensaje}" class="alert" th:classappend="'alert-' + ${tipoAlerta != null ? tipoAlerta : 'info'}">
+            <svg th:replace="~{fragments/icons :: icon('info', 'icon-sm')}"></svg>
+            <span th:text="${mensaje}">Mensaje</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title">Planes de acción correctiva</h1>
+                    <p class="page-subtitle">Iniciativas para cerrar brechas en los indicadores con semáforo en riesgo</p>
+                </div>
+                <div class="header-actions">
+                    <a th:href="@{/kpis(soloRiesgo='true')}" class="btn-secondary">
+                        <svg th:replace="~{fragments/icons :: icon('alert', 'icon-sm')}"></svg>
+                        Ver KPIs en riesgo
+                    </a>
+                    <a th:href="@{/planes/nuevo}" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                        Nuevo plan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <section class="table-card">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <h2 class="card-title">Cartera de planes</h2>
+                    <span class="card-meta" th:text="${planes.size()} + ' iniciativas registradas'">5 iniciativas registradas</span>
+                </div>
+                <span class="card-meta">Presupuesto en dólares estadounidenses</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="bsc-table">
+                    <colgroup>
+                        <col style="width: 92px">
+                        <col style="width: 220px">
+                        <col>
+                        <col style="width: 120px">
+                        <col style="width: 112px">
+                        <col style="width: 100px">
+                        <col style="width: 98px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Indicador</th>
+                            <th>Acción correctiva</th>
+                            <th>Riesgo</th>
+                            <th>Presupuesto</th>
+                            <th>Estado</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(planes)}">
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg th:replace="~{fragments/icons :: icon('clipboard', '')}"></svg>
+                                    </div>
+                                    <div class="title">Todavía no hay planes de acción</div>
+                                    <p>Documenta una iniciativa para cerrar la brecha de un indicador.</p>
+                                    <a th:href="@{/planes/nuevo}" class="btn-primary">
+                                        <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                                        Nuevo plan
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:each="plan : ${planes}" data-row>
+                            <td>
+                                <span class="id-pill" th:text="${plan.id}">PA-001</span>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-main" th:text="${plan.indicadorNombre}" th:title="${plan.indicadorNombre}">Llegadas puntuales</span>
+                                    <span class="cell-sub persp-tag" style="font-size: 10.5px;">
+                                        <span th:if="${plan.perspectiva == 'Financiera'}" class="persp-financiera">
+                                            <svg th:replace="~{fragments/icons :: icon('dollar', 'icon-sm')}"></svg>
+                                        </span>
+                                        <span th:if="${plan.perspectiva == 'Clientes'}" class="persp-clientes">
+                                            <svg th:replace="~{fragments/icons :: icon('users', 'icon-sm')}"></svg>
+                                        </span>
+                                        <span th:if="${plan.perspectiva == 'Procesos internos'}" class="persp-procesos">
+                                            <svg th:replace="~{fragments/icons :: icon('layers', 'icon-sm')}"></svg>
+                                        </span>
+                                        <span th:if="${plan.perspectiva == 'Aprendizaje y crecimiento'}" class="persp-aprendizaje">
+                                            <svg th:replace="~{fragments/icons :: icon('leaf', 'icon-sm')}"></svg>
+                                        </span>
+                                        <span class="truncate" th:text="${plan.perspectiva}" th:title="${plan.perspectiva}">Procesos internos</span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-muted" th:text="${plan.accionCorrectiva}" th:title="${plan.accionCorrectiva}">Acción correctiva</span>
+                                    <span class="cell-sub" th:text="${plan.responsable}" th:title="${plan.responsable}">Operaciones</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-pill"
+                                      th:classappend="${plan.nivelRiesgo == 'Crítico' ? 'pill-critico' : (plan.nivelRiesgo == 'Riesgo alto' ? 'pill-alto' : (plan.nivelRiesgo == 'Riesgo moderado' ? 'pill-moderado' : 'pill-casi'))}"
+                                      th:text="${plan.nivelRiesgo == 'Riesgo moderado' ? 'Moderado' : (plan.nivelRiesgo == 'Riesgo alto' ? 'Alto' : plan.nivelRiesgo)}">Moderado</span>
+                            </td>
+                            <td>
+                                <span class="cell-num" th:text="${plan.presupuesto != null ? 'US$ ' + #numbers.formatDecimal(plan.presupuesto, 0, 'COMMA', 0, 'POINT') : '—'}">US$ 250,000</span>
+                            </td>
+                            <td>
+                                <span class="mini-badge"
+                                      th:classappend="${plan.estado == 'Completado' ? 'badge-logrado' : (plan.estado == 'En ejecución' ? 'badge-meta' : (plan.estado == 'Aprobado' ? 'badge-refuerzo' : 'badge-moderado'))}"
+                                      th:text="${plan.estado}">Propuesto</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{'/planes/editar/' + ${plan.id}}" class="btn-ghost-sm" title="Editar">
+                                        <svg th:replace="~{fragments/icons :: icon('pencil', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/planes/eliminar/' + ${plan.id}}" class="btn-ghost-sm is-danger" title="Eliminar"
+                                       onclick="return confirm('¿Eliminar este plan?');">
+                                        <svg th:replace="~{fragments/icons :: icon('trash', '')}"></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="filtro-vacio" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <svg th:replace="~{fragments/icons :: icon('search', '')}"></svg>
+                </div>
+                <div class="title">Sin coincidencias</div>
+                <p>Prueba con otro término de búsqueda.</p>
+            </div>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

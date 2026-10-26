@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('objetivos')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title" th:text="${titulo}">Nuevo objetivo estratégico</h1>
+                    <p class="page-subtitle">Define la meta que articulará los indicadores de una perspectiva</p>
+                </div>
+                <a th:href="@{/objetivos}" class="btn-secondary">
+                    <svg th:replace="~{fragments/icons :: icon('arrow-left', 'icon-sm')}"></svg>
+                    Volver
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <section class="form-card" style="max-width: 860px;">
+            <form th:action="@{/objetivos/guardar}" th:object="${objetivo}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('compass', '')}"></svg>
+                        Definición del objetivo
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="obj-nombre">Nombre del objetivo <span class="req">*</span></label>
+                            <input id="obj-nombre" type="text" th:field="*{nombre}" required
+                                   placeholder="Ej.: Incrementar la rentabilidad">
+                        </div>
+
+                        <div class="field">
+                            <label for="obj-perspectiva">Perspectiva <span class="req">*</span></label>
+                            <select id="obj-perspectiva" th:field="*{perspectiva}" required>
+                                <option value="">Seleccione…</option>
+                                <option th:each="p : ${perspectivas}" th:value="${p.nombre}" th:text="${p.nombre}">Financiera</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="obj-descripcion">Descripción</label>
+                            <textarea id="obj-descripcion" th:field="*{descripcion}" rows="3"
+                                      placeholder="Descripción detallada del objetivo estratégico…"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <svg th:replace="~{fragments/icons :: icon('settings', '')}"></svg>
+                        Gestión y seguimiento
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="obj-responsable">Responsable</label>
+                            <input id="obj-responsable" type="text" th:field="*{responsable}" placeholder="Ej.: Ana Pérez">
+                        </div>
+
+                        <div class="field">
+                            <label for="obj-prioridad">Prioridad</label>
+                            <select id="obj-prioridad" th:field="*{prioridad}">
+                                <option value="Alta">Alta</option>
+                                <option value="Media">Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="obj-peso">Peso sobre el BSC (%)</label>
+                            <input id="obj-peso" type="number" th:field="*{peso}" min="0" max="100" placeholder="100">
+                        </div>
+
+                        <div class="field">
+                            <label for="obj-estado">Estado</label>
+                            <select id="obj-estado" th:field="*{estado}">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="obj-fecha">Fecha de creación</label>
+                            <input id="obj-fecha" type="date" th:field="*{fechaCreacion}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/objetivos}" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">
+                        <svg th:replace="~{fragments/icons :: icon('check', 'icon-sm')}"></svg>
+                        Guardar objetivo
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>

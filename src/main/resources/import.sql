@@ -1,0 +1,1 @@
+-- Datos iniciales del Balanced Scorecard manejados por DataInitializer

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Objetivos Estratégicos')}"></head>
+<body>
+
+<div class="app-container">
+    <aside th:replace="~{fragments/layout :: sidebarLeft('objetivos')}"></aside>
+
+    <main class="main-content">
+        <header th:replace="~{fragments/layout :: topBar}"></header>
+
+        <div th:if="${mensaje}" class="alert" th:classappend="'alert-' + ${tipoAlerta != null ? tipoAlerta : 'info'}">
+            <svg th:replace="~{fragments/icons :: icon('info', 'icon-sm')}"></svg>
+            <span th:text="${mensaje}">Mensaje</span>
+        </div>
+
+        <!-- Encabezado -->
+        <div class="page-header">
+            <div class="page-header-content">
+                <div>
+                    <h1 class="page-title">Objetivos estratégicos</h1>
+                    <p class="page-subtitle">Metas de la organización organizadas por las 4 perspectivas del BSC</p>
+                </div>
+                <a th:href="@{/objetivos/nuevo}" class="btn-primary">
+                    <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                    Nuevo objetivo
+                </a>
+            </div>
+
+            <div class="perspective-filters">
+                <a th:href="@{/objetivos}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Todas' || perspectivaSeleccionada == null ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                    Todas
+                    <span class="count" th:text="${objetivos.size()}">12</span>
+                </a>
+                <a th:href="@{/objetivos(perspectiva='Financiera')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Financiera' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('dollar', '')}"></svg>
+                    Financiera
+                </a>
+                <a th:href="@{/objetivos(perspectiva='Clientes')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Clientes' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('users', '')}"></svg>
+                    Clientes
+                </a>
+                <a th:href="@{/objetivos(perspectiva='Procesos internos')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Procesos internos' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('layers', '')}"></svg>
+                    Procesos internos
+                </a>
+                <a th:href="@{/objetivos(perspectiva='Aprendizaje y crecimiento')}" class="filter-chip" th:classappend="${perspectivaSeleccionada == 'Aprendizaje y crecimiento' ? 'active' : ''}">
+                    <svg th:replace="~{fragments/icons :: icon('leaf', '')}"></svg>
+                    Aprendizaje y crecimiento
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <section class="table-card">
+            <div class="card-head">
+                <div class="card-head-left">
+                    <h2 class="card-title">Mapa de objetivos</h2>
+                    <span class="card-meta" th:text="${objetivos.size()} + ' objetivos visibles'">12 objetivos visibles</span>
+                </div>
+                <span class="card-meta">Peso ponderado sobre el total del BSC</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="bsc-table">
+                    <colgroup>
+                        <col style="width: 92px">
+                        <col>
+                        <col style="width: 128px">
+                        <col style="width: 152px">
+                        <col style="width: 92px">
+                        <col style="width: 66px">
+                        <col style="width: 92px">
+                        <col style="width: 98px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Objetivo</th>
+                            <th>Perspectiva</th>
+                            <th>Responsable</th>
+                            <th>Prioridad</th>
+                            <th>Peso</th>
+                            <th>Estado</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(objetivos)}">
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg th:replace="~{fragments/icons :: icon('compass', '')}"></svg>
+                                    </div>
+                                    <div class="title">Sin objetivos para esta perspectiva</div>
+                                    <p>Crea un objetivo estratégico para comenzar a desplegar indicadores.</p>
+                                    <a th:href="@{/objetivos/nuevo}" class="btn-primary">
+                                        <svg th:replace="~{fragments/icons :: icon('plus', 'icon-sm')}"></svg>
+                                        Nuevo objetivo
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:each="objetivo : ${objetivos}" data-row>
+                            <td>
+                                <span class="id-pill" th:text="${objetivo.id}">OBJ-01</span>
+                            </td>
+                            <td>
+                                <div class="cell-stack">
+                                    <span class="cell-main" th:text="${objetivo.nombre}" th:title="${objetivo.nombre}">Incrementar la rentabilidad</span>
+                                    <span class="cell-sub" th:text="${objetivo.descripcion}" th:title="${objetivo.descripcion}">Descripción del objetivo</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="persp-tag">
+                                    <span th:if="${objetivo.perspectiva == 'Financiera'}" class="persp-financiera">
+                                        <svg th:replace="~{fragments/icons :: icon('dollar', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${objetivo.perspectiva == 'Clientes'}" class="persp-clientes">
+                                        <svg th:replace="~{fragments/icons :: icon('users', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${objetivo.perspectiva == 'Procesos internos'}" class="persp-procesos">
+                                        <svg th:replace="~{fragments/icons :: icon('layers', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span th:if="${objetivo.perspectiva == 'Aprendizaje y crecimiento'}" class="persp-aprendizaje">
+                                        <svg th:replace="~{fragments/icons :: icon('leaf', 'icon-sm')}"></svg>
+                                    </span>
+                                    <span class="truncate"
+                                          th:text="${objetivo.perspectiva == 'Aprendizaje y crecimiento' ? 'Aprendizaje' : (objetivo.perspectiva == 'Procesos internos' ? 'Procesos' : objetivo.perspectiva)}"
+                                          th:title="${objetivo.perspectiva}">Financiera</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="cell-main" th:text="${objetivo.responsable}" th:title="${objetivo.responsable}">Ana Pérez</span>
+                            </td>
+                            <td>
+                                <span class="mini-badge"
+                                      th:classappend="${objetivo.prioridad == 'Alta' ? 'badge-atencion' : (objetivo.prioridad == 'Media' ? 'badge-meta' : 'badge-refuerzo')}"
+                                      th:text="${objetivo.prioridad}">Alta</span>
+                            </td>
+                            <td>
+                                <span class="cell-num" th:text="${objetivo.peso} + '%'">100%</span>
+                            </td>
+                            <td>
+                                <span class="mini-badge"
+                                      th:classappend="${objetivo.estado == 'Activo' ? 'badge-logrado' : 'badge-moderado'}"
+                                      th:text="${objetivo.estado}">Activo</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{'/objetivos/editar/' + ${objetivo.id}}" class="btn-ghost-sm" title="Editar">
+                                        <svg th:replace="~{fragments/icons :: icon('pencil', '')}"></svg>
+                                    </a>
+                                    <a th:href="@{'/objetivos/eliminar/' + ${objetivo.id}}" class="btn-ghost-sm is-danger" title="Eliminar"
+                                       onclick="return confirm('¿Eliminar este objetivo?');">
+                                        <svg th:replace="~{fragments/icons :: icon('trash', '')}"></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="filtro-vacio" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <svg th:replace="~{fragments/icons :: icon('search', '')}"></svg>
+                </div>
+                <div class="title">Sin coincidencias</div>
+                <p>Prueba con otro término de búsqueda.</p>
+            </div>
+        </section>
+    </main>
+
+    <aside th:replace="~{fragments/layout :: sidebarRight}"></aside>
+</div>
+
+</body>
+</html>
